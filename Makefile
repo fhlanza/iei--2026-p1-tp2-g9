@@ -39,3 +39,26 @@ doctor:
 # Executa todas as etapas de validação do projeto.
 .PHONY: all
 all: build lint test report
+
+# Executa a aplicação principal do projeto.
+.PHONY: run
+run:
+	$(DOCKER_COMPOSE) exec dev python src/main.py
+
+# Formata os ficheiros Python de src/ e tests/ com Ruff.
+.PHONY: format
+format:
+	$(DOCKER_COMPOSE) exec dev ruff format src/ tests/
+
+
+# Apresenta a lista de comandos disponíveis no Makefile.
+.PHONY: help
+
+help:
+	@echo "make build  - constrói a imagem Docker"
+	@echo "make test   - executa os testes"
+	@echo "make lint   - verifica o código com Ruff"
+	@echo "make report - gera o relatório de cobertura"
+	@echo "make shell  - abre um terminal no contentor"
+	@echo "make doctor - verifica o ambiente"
+	@echo "make all    - executa todas as validações"
