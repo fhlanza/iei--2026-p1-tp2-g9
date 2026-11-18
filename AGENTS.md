@@ -5,20 +5,31 @@
 
 - Problema: Cada computador tem sistemas operativos diferentes, versões de aplicações, como o Python, e de ferramentas diferentes o que pode levar a certo código falhar em alguns PCs e noutros casos funcionar perfeitamente ("funciona na minha máquina")
 
-- Solução: Criar um ambiente independente da máquina, construido através do Dockerfile, no qual o código corre da mesma maneira em qualquer PC
+- Solução: Criar um ambiente independente da máquina, construído através do Dockerfile, no qual o código corre da mesma maneira em qualquer PC
 
-- Aplicação Exemplo:
+- Aplicação Exemplo: Criação de uma calculadora de médias de notas em src/ com testes em tests/ 
+
 
 - Autores: Fernando e João Pinheiro, grupo 09, TP02.
 
-## 2. Ambiente e Stack
-- Python 3.12, proveniente da imagem oficial de 'python:3.12-slim'
+## 2. Arquitetura e Stack
+- Python 3.12, proveniente da imagem oficial de `python:3.12-slim-trixie`
 
-- 
+- Onde corre: Tudo corre dentro do contentor sendo por isso independente do tipo do PC, requerindo unicamente que este tenha Docker, make e git instalados
+
+- Ferramentas: pytest para testes, ruff para lint, make para automatizar e pytest-cov para a cobertura
+
+- Como o código entra: código não é copiado para a imagem sendo a pasta do projeto montada por bind mount em /app, ou seja, editamos no PC e corre no contentor
+
+- Utilizador: o contentor corre como developer sendo este criado a partir do UID / GID do anfitriao (passados como ARG ) para os ficheiros criados no contentor ficarem nossos
+
+- Ponto de entrada: O Makefile é a unica maneira de construir, testar e gerar relatorios
+
+- Dependencias: as ferramentas python estao em requirements-dev.txt e têm versoes fixas. No requirements-dev.txt aparece uma outra dependência e obriga a imagem a ser recontruida. Para alem disso, nunca se faz pip install manualmente no contentor
 
 
 ## 3. Convenções de Código
-- 
+- a completar na issue #4
 
 ## 4. Segurança e Restrições
 - O contentor nunca é corrido como root
