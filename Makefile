@@ -5,7 +5,7 @@ HOST_UID := $(shell id -u)
 HOST_GID := $(shell id -g)
 
 ##Diz ao make que estes nomes sao comandos e que nao sao ficheiros
-.PHONY: help build run test lint report shell clean all
+.PHONY: help build run test lint report shell clean all format
 
 
 ###mostra os comandos disponiveis
@@ -18,6 +18,7 @@ help:
 	@echo "make shell   - abre um terminal dentro do contentor"
 	@echo "make clean   - apaga os relatórios e as caches"
 	@echo "make all     - build + lint + test + report"
+	@echo "make format  - arruma o código com o ruff"
 
 ##Controi a imagem e passa o UID e GID aos ARG do Dockerfile
 build:#é a ligaçao entre o Makefile e o Dockerfile. passa os argumento de UID e GID para dentro do contentor
@@ -32,6 +33,9 @@ test:
 
 lint:
 	$(RUN) ruff check src tests
+
+format:
+	$(RUN) ruff format src tests
 
 ##Relatórios de lint
 report:
