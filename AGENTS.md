@@ -17,7 +17,7 @@
 
 - Onde corre: Tudo corre dentro do contentor sendo por isso independente do tipo do PC, requerindo unicamente que este tenha Docker, make e git instalados
 
-- Ferramentas: pytest para testes, ruff para linit e make para automatizar
+- Ferramentas: pytest para testes, ruff para lint, make para automatizar e pytest-cov para a cobertura
 
 - Como o código entra: código não é copiado para a imagem sendo a pasta do projeto montada por bind mount em /app, ou seja, editamos no PC e corre no contentor
 
@@ -25,7 +25,7 @@
 
 - Ponto de entrada: O Makefile é a unica maneira de construir, testar e gerar relatorios
 
-- Dependencias: as ferramentas python estao em requirements-dev.txt e têm versoes fixas
+- Dependencias: as ferramentas python estao em requirements-dev.txt e têm versoes fixas. No requirements-dev.txt aparece uma outra dependência e obriga a imagem a ser recontruida. Para alem disso, nunca se faz pip install manualmente no contentor
 
 
 ## 3. Convenções de Código
