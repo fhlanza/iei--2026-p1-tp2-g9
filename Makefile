@@ -1,64 +1,66 @@
-DOCKER_COMPOSE = sudo docker compose
+##Variaveis - nomes curtos para coisas compridas
+COMPOSE = docker compose
+RUN = $(COMPOSE) run --rm dev
+HOST_UID := $(shell id -u)
+HOST_GID := $(shell id -g)
 
-# Constrói a imagem Docker do ambiente de desenvolvimento.
-.PHONY: build
+##Diz ao make que estes nomes sao comandos e que nao sao ficheiros
+.PHONY: help build run test lint report shell clean all format doctor
+
+
+###mostra os comandos disponiveis
+help:
+	@echo "make build   - constrói a imagem com o teu UID / GID"
+	@echo "make run     - corre a aplicação"
+	@echo "make test    - corre os testes"
+	@echo "make lint    - verifica o código com o ruff"
+	@echo "make report  - gera os relatórios de lint, testes e cobertura em reports/"
+	@echo "make shell   - abre um terminal dentro do contentor"
+	@echo "make clean   - apaga os relatórios e as caches"
+	@echo "make all     - build + lint + test + report"
+	@echo "make format  - arruma o código com o ruff"
+	@echo "make doctor  - verifica se tens as ferramentas e a configuração do compose"
+
+##Controi a imagem e passa o UID e GID aos ARG do Dockerfile
+#é a ligaçao entre o Makefile e o Dockerfile. passa os argumento de UID e GID para dentro do contentor
 build:
-	$(DOCKER_COMPOSE) build
+	$(COMPOSE) build --build-arg USER_UID=$(HOST_UID) --build-arg USER_GID=$(HOST_GID) 
 
-# Executa os testes automatizados com Pytest.
-.PHONY: test
+##Correr e testar
+run:
+	$(RUN) python src/main.py
+
 test:
-	$(DOCKER_COMPOSE) exec dev env PYTHONPATH=/app pytest -v
+	$(RUN) python -m pytest -v
 
-# Analisa o código Python com Ruff.
-.PHONY: lint
 lint:
-	$(DOCKER_COMPOSE) exec dev ruff check src/ tests/
+	$(RUN) ruff check src tests
 
-# Gera o relatório de cobertura dos testes em formato HTML.
-.PHONY: report
+format:
+	$(RUN) ruff format src tests
+
+##Relatórios de lint
 report:
-	$(DOCKER_COMPOSE) exec dev env PYTHONPATH=/app pytest --cov=src --cov-report=term-missing --cov-report=html:reports/coverage
+	mkdir -p reports
+	$(RUN) ruff check src tests --exit-zero --output-file reports/ruff.txt
+	$(RUN) python -m pytest --junitxml=reports/junit.xml --cov=src --cov-report=term-missing --cov-report=html:reports/coverage
 
-# Abre um terminal interativo dentro do contentor Docker.
-.PHONY: shell
-shell:
-	$(DOCKER_COMPOSE) exec dev sh
+##Terminal dentro do contentor
+shell: #abre um terminal dentro do contentor
+	$(RUN) bash
 
-# Verifica as ferramentas e a configuração do ambiente.
-.PHONY: doctor
+##verifica as ferramentas e a configuraçao do compose
 doctor:
 	@echo "Verificando ambiente..."
 	@docker --version
 	@docker compose version
 	@make --version
 	@git --version
-	@$(DOCKER_COMPOSE) config --quiet
+	@$(COMPOSE) config --quiet
 	@echo "Ambiente verificado."
 
-# Executa todas as etapas de validação do projeto.
-.PHONY: all
+clean: #apaga o que foi gerado
+	rm -rf reports .pytest_cache .ruff_cache .coverage
+
+##Comando unico 
 all: build lint test report
-
-# Executa a aplicação principal do projeto.
-.PHONY: run
-run:
-	$(DOCKER_COMPOSE) exec dev python src/main.py
-
-# Formata os ficheiros Python de src/ e tests/ com Ruff.
-.PHONY: format
-format:
-	$(DOCKER_COMPOSE) exec dev ruff format src/ tests/
-
-
-# Apresenta a lista de comandos disponíveis no Makefile.
-.PHONY: help
-
-help:
-	@echo "make build  - constrói a imagem Docker"
-	@echo "make test   - executa os testes"
-	@echo "make lint   - verifica o código com Ruff"
-	@echo "make report - gera o relatório de cobertura"
-	@echo "make shell  - abre um terminal no contentor"
-	@echo "make doctor - verifica o ambiente"
-	@echo "make all    - executa todas as validações"
