@@ -1,4 +1,4 @@
-# iei-2026—tp2-g9
+# iei-2026-p1-tp2-g9
 
 ## Sobre o projeto
 
