@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Obter o código
+        uses: actions/checkout@v7
+
+      - name: Verificar o Dockerfile (hadolint)
+        run: docker run --rm -i hadolint/hadolint hadolint --failure-threshold warning --ignore DL3008 - < Dockerfile
+
+      - name: Diagnóstico do ambiente
+        run: make doctor
+
+      - name: Build, lint, testes e relatórios
+        run: make all
+
+      - name: Guardar os relatórios
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: relatorios
+          path: reports/
