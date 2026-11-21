@@ -6,6 +6,21 @@ Este projeto consiste na criação de um ambiente de desenvolvimento Python cont
 
 A aplicação de exemplo consiste numa calculadora de média de notas desenvolvida em Python.
 
+
+## Arranque
+
+Para clonar o projeto e executar todas as etapas de validação, utilize os seguintes comandos:
+
+git clone https://github.com/fhlanza/iei--2026-p1-tp2-g9.git
+
+cd iei--2026-p1-tp2-g9
+
+make all
+
+No WSL, recomenda-se clonar o repositório dentro do diretório pessoal (~), em vez de utilizar diretórios do Windows, como /mnt/c.
+
+
+
 ## Tecnologias utilizadas
 
 - Python 3.12
