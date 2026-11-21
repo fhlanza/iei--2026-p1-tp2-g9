@@ -1,19 +1,30 @@
 services:
   dev:
+
+    #Como constroi a imagem
     build:
-      context: .
+      context: . # pasta enviada para o docker
       dockerfile: Dockerfile
+      args: #valores para os ARG do Dockerfilea
+        USER_UID: ${HOSTUID:-1000} 
+        USER_GID: ${HOSTGID:-1000}
 
-    container_name: ambiente-python-dev
+  
 
-    working_dir: /app
+    working_dir: /app # pasta onde os comandos correm no contentor
 
     volumes:
-      - .:/app
+      - .:/app 
 
-    user: developer
+    
 
-    command: sleep infinity
+    command: sleep infinity # mantem o contentor a correr quando se usa o docker-compose up
 
-    stdin_open: true
+    stdin_open: true # deixa escrever no contentor
     tty: true
+
+    cap_drop: #remove as capacidades do linux, pois para correr pyton lint e testes nao  é precso
+      - ALL
+    
+    security_opt: # nenhum processo ganha mais permissoes depois do arranque
+      - no-new-privileges:true
