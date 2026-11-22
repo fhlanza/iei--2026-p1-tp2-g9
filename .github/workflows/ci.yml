@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+  workflow_dispatch:
+
+##CI so precisa de ler o codigo
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Obter o código
+        uses: actions/checkout@v7
+        
+      # DL3008 ignorada de propósito: o Debian retira as versões antigas dos pacotes,
+      # por isso fixar a versão do make no apt partia o build. A reprodutibilidade vem
+      # da imagem base fixa (python:3.12-slim-trixie) e do requirements-dev.txt.
+      - name: Verificar o Dockerfile (hadolint)
+        run: docker run --rm -i hadolint/hadolint:v2.15.1 /bin/hadolint --failure-threshold warning --ignore DL3008 - < Dockerfile
+
+      - name: Diagnóstico do ambiente
+        run: make doctor
+
+      - name: Build, lint, testes e relatórios
+        run: make all
+
+      - name: Guardar os relatórios
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: relatorios
+          path: reports/
