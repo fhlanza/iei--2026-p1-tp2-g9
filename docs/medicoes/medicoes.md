@@ -42,4 +42,21 @@ Para além disso o nosso contentor também corre como developer, pois o Dockerfi
 | Ficheiro criado pelo nosso contentor | dono `joaopinheiro69` (o utilizador do anfitrião) |
 | O nosso contentor forçado a root (`--user root`) | não consegue criar o ficheiro (`Permission denied`) |
 
-Interpretação: No Linux, o dono de um ficheiro é guardado como UID e não como um nome.
+Interpretação: No Linux, o dono de um ficheiro é guardado como UID e não como um nome. Como o bind mount partilha os mesmos ficheiros entre o anfitrião e o contentor, o ficheiro criado no contentor fica com o UID de quem o criou.
+O contentor normal corre como root (UID 0), por isso o ficheiro ficou do root e o utilizador do anfitrião não consegue editá-lo sem sudo. No nosso projeto, isto aconteceria aos ficheiros da pasta reports/.
+O nosso developer tem o UID 1000, o mesmo que o utilizador do anfitrião, porque o Makefile obtém o UID e o GID do anfitrião com id -u e id -g e passa-os ao Dockerfile como USER_UID e USER_GID. Por isso o ficheiro ficou do utilizador do anfitrião.
+Mesmo quando foi forçado a root o nosso contentor não conseguiu criar o ficheiro já que cap_drop retirou a capacidade CAP_DAC_OVERRIDE (que deixa o root ignorar as permissões) e a pasta pertence ao utilizador do anfitrião (UID 1000), e só o dono pode escrever nela. Assim são duas proteções se uma falhar, a outra continua a proteger.
+
+## 4. Tempo de build
+
+Comandos: `time docker compose build --no-cache ...` e `time make build`
+
+| Medição | Sem cache | Com cache |
+|---|---|---|
+| 18/11 | 39,3 s | 1,3 s |
+| 22/11 (1.ª) | 14,7 s | 0,6 s |
+| 22/11 (2.ª) | 12,8 s | 0,6 s |
+
+Interpretação: Cada instrução do Dockerfile cria uma camada. Caso a instrução e os ficheiros de que depende não tenham mudado, o Docker reaproveita essa camada da cache em vez de a voltar a construir. Por isso é que o build com cache demorou 0,6 s em vez de 12,8 s.
+Os passos mais lentos são o apt-get (instalação do make) e o pip install (instalação do pytest, pytest-cov e ruff).
+Além disso, com o bind mount o código de src/ nem sequer entra na imagem, por isso alterar o código nunca obriga a reconstruir a imagem.
