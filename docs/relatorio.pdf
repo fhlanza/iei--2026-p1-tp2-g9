@@ -1,0 +1,43 @@
+1. Introdução e Enquadramento
+
+Durante o desenvolvimento de projetos em equipa é muito comum um programa funcionar corretamente num computador e falhar ou não funcionar de todo noutro.
+Esta inconsistência é resultado das diferenças entre os ambientes em que cada pessoa trabalha. No nosso caso essa diferença era ao nível do sistema operativo, com o uso de Windows 11 com WSL2 num dos computadores e Linux noutro e das versões do Python, bibliotecas e ferramentas de suporte. 
+Sem ter um ambiente local igual nos dois computadores, parte do tempo acaba por ser desperdiçado a resolver  problemas de compatibilidade em vez de ser dedicada ao código.
+
+Posto isto o objetivo principal deste projeto foi desenvolver um ambiente de desenvolvimento Python isolado e reprodutível através de contentores Docker para garantir que todos que tenham o nosso progrma escrevam o código com exatamente as mesmas ferramentas e configurações. 
+Para tornar mos a utilizaçao do nosso programa ainda mais simples e util definimos que o sistema anfitrião necessita apenas de ter instalados o Docker, o GNU Make e o Git.
+
+Neste projeto estão contidos:
+
+- Imagem Docker baseada em python:3.12-slim-trixie, com make, pytest 9.2.0, pytest-cov 7.1.0 e ruff 0.17.4;
+
+- compose.yaml com bind mount;
+
+- Makefile com 11 alvos, a única entrada para construir, testar e gerar relatórios;
+
+- CI no GitHub Actions, que corre a cada push;
+
+- Aplicação de exemplo com testes unitários;
+
+- AGENTS.md e a skill safe-cli;
+
+- Medições de tamanho, capacidades, dono dos ficheiros e tempo de build.
+
+2. Arquitetura da Solução
+
+Percurso de um make test:
+Ao correr make test no terminal do anfitrião, o GNU Make lê o alvo test no Makefile e executa docker compose run --rm dev python -m pytest -v.
+De seguida o Docker Compose cria um contentor temporário a partir da imagem e monta a pasta local do projeto em /app por bind mount e corre o pytest como o utilizador sem privilégios developer.
+O resultado dos testes aparece no terminal do anfitrião e a opção --rm apaga o contentor no fim.
+
+2.2 Componentes
+
+- Dockerfile: Define a construção da imagem baseada em python:3.12-slim-trixie. É ele que instala as ferramentas necessárias e cria o utilizador developer com o UID e GID do anfitrião.
+
+- compose.yaml: Organiza o serviço dev ao partilhar a pasta do projeto em /app via bind mount e ao aplicar as restrições de segurança.
+
+- Makefile: Concentra as operações todas do projeto em 11 alvos. Funcion como ponto de entrada único para construir a imagem, executar a aplicação, testar, verificar estilo e gerar relatórios.
+
+- requirements-dev.txt: Fixa as versõe das dependências do Python de desenvolvimento (pytest==9.2.0, pytest-cov==7.1.0, ruff==0.17.4) para permitir a reprodução do programa.
+
+- .github/workflows/ci.yml: Automatiza a integração contínua no GitHub Actions a cada push, validando o Dockerfile com hadolint, verificando o ambiente com make doctor e executando make all.
