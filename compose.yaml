@@ -5,9 +5,9 @@ services:
     build:
       context: . # pasta enviada para o docker
       dockerfile: Dockerfile
-      args: #valores para os ARG do Dockerfilea
-        USER_UID: ${HOSTUID:-1000} 
-        USER_GID: ${HOSTGID:-1000}
+      args: # valores para os ARG do Dockerfile
+        USER_UID: ${HOST_UID:-1000}
+        USER_GID: ${HOST_GID:-1000}
 
   
 
