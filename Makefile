@@ -1,8 +1,18 @@
-##Variaveis - nomes curtos para coisas compridas
 COMPOSE = docker compose
-RUN = $(COMPOSE) run --rm dev
 HOST_UID := $(shell id -u)
 HOST_GID := $(shell id -g)
+
+# Deteta se está a correr dentro de um contentor Docker
+IN_DEVCONTAINER := $(shell test -f /.dockerenv && echo 1)
+
+# Define como executar os comandos
+ifeq ($(IN_DEVCONTAINER),1)
+    RUN =
+else
+    RUN = $(COMPOSE) run --rm dev
+endif
+
+
 
 ##Diz ao make que estes nomes sao comandos e que nao sao ficheiros
 .PHONY: help build run test lint report shell clean all format doctor
@@ -23,8 +33,14 @@ help:
 
 ##Controi a imagem e passa o UID e GID aos ARG do Dockerfile
 #é a ligaçao entre o Makefile e o Dockerfile. passa os argumento de UID e GID para dentro do contentor
+
+ifeq ($(IN_DEVCONTAINER),1)
 build:
-	$(COMPOSE) build --build-arg USER_UID=$(HOST_UID) --build-arg USER_GID=$(HOST_GID) 
+	@echo "Já estás dentro do Dev Container. Não é necessário construir a imagem."
+else
+build:
+	$(COMPOSE) build --build-arg USER_UID=$(HOST_UID) --build-arg USER_GID=$(HOST_GID)
+endif
 
 ##Correr e testar
 
@@ -49,7 +65,7 @@ report:
 
 ##Terminal dentro do contentor
 shell: #abre um terminal dentro do contentor
-	$(RUN) bash
+	$(RUN) sh
 
 ##verifica as ferramentas e a configuraçao do compose
 doctor:
