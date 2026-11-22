@@ -70,6 +70,22 @@ Para executar a aplicação, utilize `make run`. Não é necessário iniciar pre
 - `make doctor`: verifica as ferramentas e a configuração do Docker Compose.
 - `make all`: executa a construção da imagem, análise estática, testes e relatório.
 
+## Rodar os próprios arquivos
+
+Para executar os teus próprios ficheiros Python, coloca-os dentro da pasta src/ e utiliza o comando:
+
+make run ARQUIVO=src/nome_do_arquivo.py
+
+Exemplo:
+
+Para executar um ficheiro chamado calculadora.py:
+
+make run ARQUIVO=src/calculadora.py
+
+O ambiente Docker executará automaticamente o ficheiro indicado, sem necessidade de instalar Python ou as dependências diretamente no computador.
+
+Se nenhum ficheiro for especificado, será executado o ficheiro padrão src/main.py.
+
 ## Testes
 
 Os testes automatizados verificam o funcionamento da função de cálculo da média, incluindo diferentes valores de entrada.

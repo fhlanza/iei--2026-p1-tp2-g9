@@ -27,8 +27,10 @@ build:
 	$(COMPOSE) build --build-arg USER_UID=$(HOST_UID) --build-arg USER_GID=$(HOST_GID) 
 
 ##Correr e testar
+
+ARQUIVO ?= src/main.py
 run:
-	$(RUN) python src/main.py
+	$(RUN) python  $(ARQUIVO)
 
 test:
 	$(RUN) python -m pytest -v
