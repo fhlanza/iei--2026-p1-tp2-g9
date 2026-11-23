@@ -36,7 +36,7 @@
 
 - Nunca --privileged, pois este dá acesso total ao contentor sobre o PC
 
-- Nunca chmod 777 nem rm -rf
+- Nunca chmod 777 nem rm -rf(apenas no make clean)
 
 - Nunca montar o /var/run/docker.sock, que daria controlo ao contentor sobre o Docker
 
