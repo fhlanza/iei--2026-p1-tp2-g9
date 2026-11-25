@@ -3,6 +3,7 @@ import pytest
 from src.main import (
     calcular_media,
     classificar_media,
+    main,
     obter_maior_nota,
     obter_menor_nota,
     validar_notas,
@@ -87,3 +88,28 @@ def test_classificar_media_reprovado():
 def test_classificar_media_invalida():
     with pytest.raises(ValueError):
         classificar_media(25)
+
+#testes para 100% de cobertura
+
+def test_validar_notas_nota_nao_numerica():
+    with pytest.raises(TypeError):
+        validar_notas([10, "a"])
+
+
+def test_validar_notas_fora_do_intervalo():
+    with pytest.raises(ValueError):
+        validar_notas([10, 25])
+
+
+def test_classificar_media_nao_numerica():
+    with pytest.raises(TypeError):
+        classificar_media("15")
+
+
+def test_main_imprime_resultados(capsys):
+    main()
+    saida = capsys.readouterr().out
+    assert "Media: 15.33" in saida
+    assert "Maior nota: 17" in saida
+    assert "Menor nota: 14" in saida
+    assert "Resultado: Aprovado" in saida
