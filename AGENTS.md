@@ -25,7 +25,7 @@
 
 - Ponto de entrada: O Makefile é a unica maneira de construir, testar e gerar relatorios
 
-- Dependencias: as ferramentas python estao em requirements-dev.txt e têm versoes fixas. No requirements-dev.txt aparece uma outra dependência e obriga a imagem a ser recontruida. Para alem disso, nunca se faz pip install manualmente no contentor
+- Dependencias: as ferramentas python estao em requirements-dev.txt e têm versoes fixas. No requirements-dev.txt aparece uma outra dependência e obriga a imagem a ser recontruida. Para alem disso, nunca se faz pip install manualmente no contentor. Acrescentar uma dependência ao requirements-dev.txt obriga a que a imagem seja reconstruida atraves do make build
 
 
 ## 3. Convenções de Código
