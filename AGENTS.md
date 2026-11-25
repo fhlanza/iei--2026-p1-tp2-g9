@@ -25,18 +25,28 @@
 
 - Ponto de entrada: O Makefile é a unica maneira de construir, testar e gerar relatorios
 
-- Dependencias: as ferramentas python estao em requirements-dev.txt e têm versoes fixas. No requirements-dev.txt aparece uma outra dependência e obriga a imagem a ser recontruida. Para alem disso, nunca se faz pip install manualmente no contentor
+- Dependencias: as ferramentas python estao em requirements-dev.txt e têm versoes fixas.
+
+- Acrescentar uma dependência ao requirements-dev.txt obriga a que a imagem seja reconstruida
+
+- Nunca se faz pip install manualmente no contentor. 
 
 
 ## 3. Convenções de Código
-- a completar na issue #4
+- funçoes e variaveis são escritas com nomes em português e em minúsculuas separadas por _, como em calcular_media...
+
+- codigo em src/, testes em tests/ e em ficheiros `test_*.py` com funçoes `test_*`
+
+- dados inválidos dao erro explicito (ValueError ou TypeError) em vez de resultado errado
+
+- todo o código tem de passar em make lint e make test antes de qualquer PR
 
 ## 4. Segurança e Restrições
 - O contentor nunca é corrido como root
 
 - Nunca --privileged, pois este dá acesso total ao contentor sobre o PC
 
-- Nunca chmod 777 nem rm -rf
+- Nunca chmod 777 nem rm-rf(apenas no make clean, sobre as pastas geradas)
 
 - Nunca montar o /var/run/docker.sock, que daria controlo ao contentor sobre o Docker
 
@@ -51,9 +61,11 @@
 
 - Pode explicar conceitos, ajudar na depuração de erros, sugerir casos para teste e rever linguagem do relatório
 
-- Não pode escrever a lógica central da app, gerar ficheiros inteiros e também não pode escrever o relatório
+- Não pode escrever a lógica central da app (src/) nem o relatório, mas pode propor ficheiros de configuração (compose.yaml, ci.yml) que são revistos linha a linha e testados antes do commit
 
-- Cada uso fica registado em docs/ia/prompts.md, onde ficam a data, prompt, o que sugeriu, a decisão e o porquê dessa decisão
+- cada uso relevante fica registado na Declaração de Uso de IA do relatório.
+
+- Os comandos propostos pela IA seguem a skill skills/safe-cli
 
 - Não executa comandos , apenas os propõe e os desenvolvedores ficam encarregues de decidir e correr
 
